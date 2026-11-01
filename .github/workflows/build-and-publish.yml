@@ -1,0 +1,58 @@
+name: Build and publish container
+
+on:
+  push:
+    tags:
+      - '**'
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - image: ai-decisional-tree-container
+            dockerfile: docker/python314.Dockerfile
+            requirements_repository: alberto-finazzi95/AI-Decisional-Tree
+            requirements_ref: 9b30045e205bd03b52b87676a411f8df787534bb
+            requirements_path: requirements-lock.txt
+            requirements_file: dependencies/requirements-lock.txt
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Checkout requirements
+        if: ${{ matrix.requirements_repository != '' }}
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ matrix.requirements_repository }}
+          ref: ${{ matrix.requirements_ref }}
+          path: dependencies
+          sparse-checkout: ${{ matrix.requirements_path }}
+          sparse-checkout-cone-mode: false
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435 # v3.11.1 for security issue
+
+      - name: Log in to GHCR
+        uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6 # v4 for security issue
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push ${{ matrix.image }}
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6 for security issue
+        with:
+          context: .
+          file: ${{ matrix.dockerfile }}
+          build-args: |
+            REQUIREMENTS_FILE=${{ matrix.requirements_file || 'requirements.txt' }}
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/${{ matrix.image }}:latest
+            ghcr.io/${{ github.repository_owner }}/${{ matrix.image }}:${{ github.ref_name }}
