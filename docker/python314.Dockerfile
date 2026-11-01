@@ -32,7 +32,8 @@ COPY --chown=10001:10001 ${REQUIREMENTS_FILE} ./requirements.txt
 # Install binary distributions (wheels) only, avoiding source builds and
 # execution of their build scripts. --require-hashes requires approved hashes
 # for every requirement and dependency to verify the downloaded packages.
-RUN python -m pip install --only-binary :all: --require-hashes --requirement requirements.txt
+RUN python -m pip install --only-binary :all: --require-hashes --requirement requirements.txt\
+    && python -m pip install --only-binary :all: coverage==7.16.2
 
 # Run all subsequent container processes as the unprivileged application
 # user instead of root.
