@@ -46,7 +46,7 @@ RUN apt-get update && \
 # execution of their build scripts. --require-hashes requires approved hashes
 # for every requirement and dependency to verify the downloaded packages.
 RUN python -m pip install --only-binary :all: --require-hashes --requirement requirements.txt\
-    && python -m pip install --only-binary :all: coverage==7.16.2
+    && python -m pip install --only-binary :all: coverage==7.16.2 ruff==0.12.0 black==25.1.0
 
 # Run all subsequent container processes as the unprivileged application
 # user instead of root.
