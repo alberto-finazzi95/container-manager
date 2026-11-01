@@ -23,11 +23,11 @@ jobs:
             requirements_file: dependencies/requirements-lock.txt
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Checkout requirements
         if: ${{ matrix.requirements_repository != '' }}
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: ${{ matrix.requirements_repository }}
           ref: ${{ matrix.requirements_ref }}
