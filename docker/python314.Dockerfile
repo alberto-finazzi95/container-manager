@@ -29,6 +29,19 @@ ARG REQUIREMENTS_FILE=requirements.txt
 # ownership to the application user to keep file permissions consistent.
 COPY --chown=10001:10001 ${REQUIREMENTS_FILE} ./requirements.txt
 
+# Install Sonar Scanner CLI and remove downloaded archives and apt metadata
+# to keep the image smaller.
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends curl unzip && \
+    curl --proto "=https" --fail --location --silent --show-error \
+        --output sonar-scanner.zip \
+        https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-6.2.1.4610-linux-x64.zip && \
+    unzip sonar-scanner.zip -d /opt && \
+    mv /opt/sonar-scanner-* /opt/sonar-scanner && \
+    ln -s /opt/sonar-scanner/bin/sonar-scanner /usr/local/bin/sonar-scanner && \
+    rm sonar-scanner.zip && \
+    rm -rf /var/lib/apt/lists/*
+
 # Install binary distributions (wheels) only, avoiding source builds and
 # execution of their build scripts. --require-hashes requires approved hashes
 # for every requirement and dependency to verify the downloaded packages.
