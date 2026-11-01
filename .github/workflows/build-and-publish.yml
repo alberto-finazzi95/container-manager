@@ -18,7 +18,7 @@ jobs:
           - image: ai-decisional-tree-container
             dockerfile: docker/python314.Dockerfile
             requirements_repository: alberto-finazzi95/AI-Decisional-Tree
-            requirements_ref: 9b30045e205bd03b52b87676a411f8df787534bb
+            requirements_ref: feature/pipeline-developement
             requirements_path: requirements-lock.txt
             requirements_file: dependencies/requirements-lock.txt
     steps:
